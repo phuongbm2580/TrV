@@ -32,6 +32,17 @@ button {
   cursor: pointer;
 }
 
+.cinemalm-mobile-menu a {
+  color: #f2f2f2;
+  text-decoration: none;
+}
+
+.cinemalm-mobile-menu a:visited,
+.cinemalm-mobile-menu a:hover,
+.cinemalm-mobile-menu a:active {
+  color: #f2f2f2;
+}
+
 ::selection {
   background: #dc0000;
   color: #0a0a0a;

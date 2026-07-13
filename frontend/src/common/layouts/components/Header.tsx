@@ -4,7 +4,7 @@ import {
   ProfileOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import LoginModal from "../../../components/LoginModal";
 import RegisterModal from "../../../components/RegisterModal";
@@ -19,6 +19,14 @@ const navItems = [
 
 const Header = () => {
   const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    document.body.style.overflow = open ? "hidden" : "";
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [open]);
 
   return (
     <header className="sticky top-0 z-50 border-b border-white/10 bg-[#0A0A0A]/95 backdrop-blur-xl">
@@ -95,7 +103,18 @@ const Header = () => {
       </div>
 
       {open && (
-        <div className="fixed inset-0 z-50 bg-[#0A0A0A] px-5 py-5 lg:hidden">
+        <div
+          className="cinemalm-mobile-menu lg:hidden"
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 9999,
+            minHeight: "100dvh",
+            overflowY: "auto",
+            backgroundColor: "#0A0A0A",
+            padding: "20px",
+          }}
+        >
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center gap-3" onClick={() => setOpen(false)}>
               <span className="grid h-10 w-10 place-items-center border border-white/20 bg-[#141414] font-black text-[#DC0000]">
