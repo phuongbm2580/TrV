@@ -6,6 +6,8 @@ import {
 } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
+import { useLogoutMutation } from "../../hooks/useAuth";
+import { useAuthSelector } from "../../stores/useAuthStore";
 import LoginModal from "../../../components/LoginModal";
 import RegisterModal from "../../../components/RegisterModal";
 
@@ -19,6 +21,9 @@ const navItems = [
 
 const Header = () => {
   const [open, setOpen] = useState(false);
+  const user = useAuthSelector((state) => state.user);
+  const isAuthenticated = useAuthSelector((state) => state.isAuthenticated);
+  const logoutMutation = useLogoutMutation();
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
@@ -27,6 +32,11 @@ const Header = () => {
       document.body.style.overflow = "";
     };
   }, [open]);
+
+  const handleLogout = () => {
+    setOpen(false);
+    logoutMutation.mutate();
+  };
 
   return (
     <header className="sticky top-0 z-50 border-b border-white/10 bg-[#0A0A0A]/95 backdrop-blur-xl">
@@ -74,22 +84,43 @@ const Header = () => {
           >
             <ProfileOutlined />
           </Link>
-          <RegisterModal>
-            <button
-              type="button"
-              className="h-11 border border-white/15 px-5 text-sm font-bold uppercase tracking-[0.14em] text-[#F2F2F2] transition hover:border-white/40"
-            >
-              Đăng ký
-            </button>
-          </RegisterModal>
-          <LoginModal>
-            <button
-              type="button"
-              className="h-11 bg-[#DC0000] px-5 text-sm font-black uppercase tracking-[0.14em] text-[#0A0A0A] transition hover:bg-[#F2F2F2]"
-            >
-              Đăng nhập
-            </button>
-          </LoginModal>
+
+          {isAuthenticated ? (
+            <>
+              <Link
+                to="/profile"
+                className="h-11 max-w-48 truncate border border-white/15 px-5 text-sm font-bold uppercase leading-[44px] tracking-[0.14em] text-[#F2F2F2] transition hover:border-white/40"
+              >
+                {user?.userName || "Tài khoản"}
+              </Link>
+              <button
+                type="button"
+                className="h-11 bg-[#DC0000] px-5 text-sm font-black uppercase tracking-[0.14em] text-[#0A0A0A] transition hover:bg-[#F2F2F2]"
+                onClick={handleLogout}
+              >
+                Đăng xuất
+              </button>
+            </>
+          ) : (
+            <>
+              <RegisterModal>
+                <button
+                  type="button"
+                  className="h-11 border border-white/15 px-5 text-sm font-bold uppercase tracking-[0.14em] text-[#F2F2F2] transition hover:border-white/40"
+                >
+                  Đăng ký
+                </button>
+              </RegisterModal>
+              <LoginModal>
+                <button
+                  type="button"
+                  className="h-11 bg-[#DC0000] px-5 text-sm font-black uppercase tracking-[0.14em] text-[#0A0A0A] transition hover:bg-[#F2F2F2]"
+                >
+                  Đăng nhập
+                </button>
+              </LoginModal>
+            </>
+          )}
         </div>
 
         <button
@@ -164,22 +195,43 @@ const Header = () => {
           </div>
 
           <div className="mt-4 grid grid-cols-2 gap-3">
-            <RegisterModal>
-              <button
-                type="button"
-                className="h-12 border border-white/15 text-sm font-bold uppercase tracking-[0.14em] text-[#F2F2F2]"
-              >
-                Đăng ký
-              </button>
-            </RegisterModal>
-            <LoginModal>
-              <button
-                type="button"
-                className="h-12 bg-[#DC0000] text-sm font-black uppercase tracking-[0.14em] text-[#0A0A0A]"
-              >
-                Đăng nhập
-              </button>
-            </LoginModal>
+            {isAuthenticated ? (
+              <>
+                <Link
+                  to="/profile"
+                  onClick={() => setOpen(false)}
+                  className="flex h-12 items-center justify-center border border-white/15 text-sm font-bold uppercase tracking-[0.14em] text-[#F2F2F2]"
+                >
+                  Tài khoản
+                </Link>
+                <button
+                  type="button"
+                  className="h-12 bg-[#DC0000] text-sm font-black uppercase tracking-[0.14em] text-[#0A0A0A]"
+                  onClick={handleLogout}
+                >
+                  Đăng xuất
+                </button>
+              </>
+            ) : (
+              <>
+                <RegisterModal>
+                  <button
+                    type="button"
+                    className="h-12 border border-white/15 text-sm font-bold uppercase tracking-[0.14em] text-[#F2F2F2]"
+                  >
+                    Đăng ký
+                  </button>
+                </RegisterModal>
+                <LoginModal>
+                  <button
+                    type="button"
+                    className="h-12 bg-[#DC0000] text-sm font-black uppercase tracking-[0.14em] text-[#0A0A0A]"
+                  >
+                    Đăng nhập
+                  </button>
+                </LoginModal>
+              </>
+            )}
           </div>
 
           <p className="mt-10 text-sm leading-6 text-[#9A9A9A]">
