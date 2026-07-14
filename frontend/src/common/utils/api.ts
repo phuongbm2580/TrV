@@ -9,6 +9,7 @@ import type { ICsrfResponse } from "../types/auth";
 
 type RetriableRequestConfig = InternalAxiosRequestConfig & {
   _retry?: boolean;
+  _csrfRetry?: boolean;
   _skipAuthRefresh?: boolean;
 };
 
@@ -20,6 +21,7 @@ type QueueItem = {
 const unsafeMethods = ["post", "put", "patch", "delete"];
 const authNoRefreshPaths = [
   "/auth/login",
+  "/auth/me",
   "/auth/register",
   "/auth/refresh",
   "/auth/logout",
@@ -109,6 +111,19 @@ api.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
     const originalRequest = error.config as RetriableRequestConfig | undefined;
+
+    if (
+      originalRequest &&
+      error.response?.status === 419 &&
+      isUnsafeMethod(originalRequest.method) &&
+      !originalRequest._csrfRetry &&
+      !originalRequest.url?.includes("/auth/csrf-cookie")
+    ) {
+      originalRequest._csrfRetry = true;
+      clearCsrfToken();
+      await initCsrfToken();
+      return api(originalRequest);
+    }
 
     if (
       !originalRequest ||
