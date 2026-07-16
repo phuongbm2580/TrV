@@ -27,9 +27,14 @@ export interface IForgotPasswordPayload {
 
 export interface IResetPasswordPayload {
   email: string;
-  token: string;
+  code: string;
   password: string;
   password_confirmation: string;
+}
+
+export interface IVerifyEmailPayload {
+  email: string;
+  code: string;
 }
 
 export interface IResendVerificationPayload {

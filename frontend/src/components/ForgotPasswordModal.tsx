@@ -1,6 +1,7 @@
 import { Button, Form, Input, Modal } from "antd";
 import type { ReactElement } from "react";
 import React, { useState } from "react";
+import { useNavigate } from "react-router";
 import { useForgotPasswordMutation } from "../common/hooks/useAuth";
 import { useMessage } from "../common/hooks/useMessage";
 import type { IForgotPasswordPayload } from "../common/types/auth";
@@ -16,13 +17,15 @@ const ForgotPasswordModal = ({
   const [open, setOpen] = useState(false);
   const [form] = Form.useForm<IForgotPasswordPayload>();
   const forgotPasswordMutation = useForgotPasswordMutation();
+  const navigate = useNavigate();
   const { HandleError, antdMessage } = useMessage();
 
   const handleSubmit = async (values: IForgotPasswordPayload) => {
     try {
       await forgotPasswordMutation.mutateAsync(values);
-      antdMessage.success("Đã gửi email đặt lại mật khẩu. Vui lòng kiểm tra hộp thư.");
+      antdMessage.success("Đã gửi mã đặt lại mật khẩu. Vui lòng kiểm tra email.");
       setOpen(false);
+      navigate(`/reset-password?email=${encodeURIComponent(values.email)}`);
     } catch (error) {
       HandleError(error, { fallback: "Không thể gửi email đặt lại mật khẩu." });
     }
@@ -44,7 +47,9 @@ const ForgotPasswordModal = ({
         width={600}
         footer={null}
         className="border border-white/10 backdrop-blur-md"
-        title={<p className="text-lg font-semibold text-white/90 tracking-wide">Quên mật khẩu</p>}
+        title={
+          <p className="text-lg font-semibold text-white/90 tracking-wide">Quên mật khẩu</p>
+        }
       >
         <Form form={form} layout="vertical" onFinish={handleSubmit} className="my-6!">
           <Form.Item
@@ -80,7 +85,7 @@ const ForgotPasswordModal = ({
                 fontWeight: 700,
               }}
             >
-              Gửi email đặt lại mật khẩu
+              Gửi mã đặt lại mật khẩu
             </Button>
           </Form.Item>
         </Form>

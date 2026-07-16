@@ -23,6 +23,7 @@ const authNoRefreshPaths = [
   "/auth/login",
   "/auth/me",
   "/auth/register",
+  "/auth/verify-email",
   "/auth/refresh",
   "/auth/logout",
   "/auth/csrf-cookie",

@@ -5,14 +5,15 @@ import { useMessage } from "../../../common/hooks/useMessage";
 import { formRules } from "../../../common/utils/formRules";
 
 type ResetPasswordValues = {
+  email: string;
+  code: string;
   password: string;
   password_confirmation: string;
 };
 
 const ResetPassword = () => {
   const [searchParams] = useSearchParams();
-  const email = searchParams.get("email") || "";
-  const token = searchParams.get("token") || "";
+  const initialEmail = searchParams.get("email") || "";
   const [form] = Form.useForm<ResetPasswordValues>();
   const resetPasswordMutation = useResetPasswordMutation();
   const { HandleError, antdMessage } = useMessage();
@@ -20,8 +21,8 @@ const ResetPassword = () => {
   const handleSubmit = async (values: ResetPasswordValues) => {
     try {
       await resetPasswordMutation.mutateAsync({
-        email,
-        token,
+        email: values.email,
+        code: values.code,
         password: values.password,
         password_confirmation: values.password_confirmation,
       });
@@ -32,13 +33,13 @@ const ResetPassword = () => {
     }
   };
 
-  if (!email || !token) {
+  if (resetPasswordMutation.isSuccess) {
     return (
       <section className="mx-auto max-w-2xl px-4 py-20">
         <Result
-          status="warning"
-          title="Liên kết đặt lại mật khẩu không hợp lệ"
-          subTitle="Email hoặc token đặt lại mật khẩu bị thiếu."
+          status="success"
+          title="Đặt lại mật khẩu thành công"
+          subTitle="Bạn có thể quay lại trang chủ và đăng nhập bằng mật khẩu mới."
           extra={
             <Link to="/">
               <Button type="primary">Về trang chủ</Button>
@@ -58,10 +59,54 @@ const ResetPassword = () => {
         Đặt lại mật khẩu
       </h1>
       <p className="mt-3 text-sm leading-7 text-[#9A9A9A]">
-        Nhập mật khẩu mới cho tài khoản {email}.
+        Nhập mã 6 số trong email và mật khẩu mới cho tài khoản của bạn.
       </p>
 
-      <Form form={form} layout="vertical" onFinish={handleSubmit} className="mt-8">
+      <Form
+        form={form}
+        layout="vertical"
+        onFinish={handleSubmit}
+        className="mt-8"
+        initialValues={{ email: initialEmail }}
+      >
+        <Form.Item
+          name="email"
+          label={<p className="text-base font-medium">Email</p>}
+          rules={[
+            formRules.required("Email"),
+            {
+              type: "email",
+              message: "Vui lòng nhập đúng định dạng email!",
+            },
+          ]}
+        >
+          <Input
+            placeholder="Email"
+            className="bg-transparent! text-white placeholder:text-white/50! border-white/10!"
+            style={{ height: 56, boxShadow: "none" }}
+          />
+        </Form.Item>
+
+        <Form.Item
+          name="code"
+          label={<p className="text-base font-medium">Mã đặt lại mật khẩu</p>}
+          rules={[
+            formRules.required("Mã đặt lại mật khẩu"),
+            {
+              pattern: /^\d{6}$/,
+              message: "Mã đặt lại mật khẩu gồm 6 chữ số!",
+            },
+          ]}
+        >
+          <Input
+            inputMode="numeric"
+            maxLength={6}
+            placeholder="Nhập mã 6 số"
+            className="bg-transparent! text-white placeholder:text-white/50! border-white/10!"
+            style={{ height: 56, boxShadow: "none", letterSpacing: "0.2em" }}
+          />
+        </Form.Item>
+
         <Form.Item
           name="password"
           label={<p className="text-base font-medium">Mật khẩu mới</p>}

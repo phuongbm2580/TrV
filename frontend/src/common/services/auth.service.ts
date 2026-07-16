@@ -6,6 +6,7 @@ import type {
   IRegisterPayload,
   IResendVerificationPayload,
   IResetPasswordPayload,
+  IVerifyEmailPayload,
 } from "../types/auth";
 import type { TypeResponse } from "../types/response";
 import type { IUser } from "../types/user";
@@ -89,8 +90,8 @@ export const authService = {
     return response.data;
   },
 
-  async verifyEmail(token: string) {
-    const response = await api.get<TypeResponse<null>>(`/auth/verify/${token}`);
+  async verifyEmail(payload: IVerifyEmailPayload) {
+    const response = await api.post<TypeResponse<null>>("/auth/verify-email", payload);
     return response.data;
   },
 

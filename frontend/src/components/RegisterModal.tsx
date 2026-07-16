@@ -1,6 +1,7 @@
 import { Button, Form, Input, Modal } from "antd";
 import type { ReactElement } from "react";
 import React, { useState } from "react";
+import { useNavigate } from "react-router";
 import { useRegisterMutation } from "../common/hooks/useAuth";
 import { useMessage } from "../common/hooks/useMessage";
 import type { IRegisterPayload } from "../common/types/auth";
@@ -22,6 +23,7 @@ const RegisterModal = ({
   const [open, setOpen] = useState(false);
   const [form] = Form.useForm<RegisterFormValues>();
   const registerMutation = useRegisterMutation();
+  const navigate = useNavigate();
   const { HandleError, antdMessage } = useMessage();
 
   const handleSubmit = async (values: RegisterFormValues) => {
@@ -35,8 +37,9 @@ const RegisterModal = ({
 
     try {
       await registerMutation.mutateAsync(payload);
-      antdMessage.success("Đăng ký thành công. Vui lòng kiểm tra email để xác thực tài khoản.");
+      antdMessage.success("Đăng ký thành công. Vui lòng kiểm tra email để lấy mã xác thực.");
       setOpen(false);
+      navigate(`/verify-email?email=${encodeURIComponent(values.email)}`);
     } catch (error) {
       HandleError(error, { fallback: "Đăng ký thất bại. Vui lòng kiểm tra lại thông tin." });
     }

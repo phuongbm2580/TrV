@@ -7,6 +7,7 @@ import type {
   IRegisterPayload,
   IResendVerificationPayload,
   IResetPasswordPayload,
+  IVerifyEmailPayload,
 } from "../types/auth";
 import { QUERYKEY } from "../constants/queryKey";
 
@@ -77,7 +78,7 @@ export const useResetPasswordMutation = () =>
 
 export const useVerifyEmailMutation = () =>
   useMutation({
-    mutationFn: (token: string) => authService.verifyEmail(token),
+    mutationFn: (payload: IVerifyEmailPayload) => authService.verifyEmail(payload),
   });
 
 export const useResendVerificationMutation = () =>
